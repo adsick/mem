@@ -1,46 +1,60 @@
 use std::fs::{File, OpenOptions};
-use std::io::Write;
+use std::io::{Write, Seek, SeekFrom};
 
 use crate::common::*;
 use crate::Memo;
+use crate::memos::Memos;
 pub struct MemApp{
     data: File,
-    memos: HashMap<u16, Memo>,
+    memos: Memos,
 }
 
 impl MemApp{
     pub fn init(filename: &str)->Self{
         let data = OpenOptions::new().create(true).read(true).write(true).open(filename).unwrap();
-        let memos = from_reader(&data).unwrap_or_default();
+        let memos =
+        if data.metadata().unwrap().len() > 0{
+            from_reader(&data).unwrap()//.unwrap_or_default();
+        } else {
+            Memos::default()
+        };
         MemApp{data, memos}
     }
 
     pub fn save(&mut self)->std::io::Result<()>{
+        self.clear()?;
         self.data.write_all(to_string_pretty(&self.memos).unwrap().as_bytes())
     }
 
-    pub fn add_memo(&mut self, memo: Option<Memo>)->&mut Memo{
-        let mut id = random();
-        while self.memos.contains_key(&id){
-            id = random();
-        }
-        let memo = self.memos.entry(id).or_insert(memo.unwrap_or_else(||Memo::new(id)));
+    pub fn clear(&mut self)->std::io::Result<()>{
+        self.data.seek(SeekFrom::Start(0)).unwrap();
+        self.data.set_len(0)
+    }
+
+    pub fn create_new_memo_interactive(&mut self)->&mut Memo{
+        let mut memo = self.memos.push(None);
+
+        memo.header = Text::new("Header").with_default(&format!("memo#{}", memo.id())).prompt().unwrap_or_default();
+        memo.body = Text::new("Body").prompt().unwrap_or_default();
         memo
     }
 
-    pub fn get_memo(&self, id: u16)->Option<&Memo>{
-        self.memos.get(&id)
+    pub fn list(&self){
+        for memo in self.memos.iter(){
+            println!("{}\n", memo.to_string())
+        }
     }
+    pub fn preview_list(&self){
+        for memo in self.memos.iter(){
+            println!("{}", memo.preview())
+        }
+    }
+    // pub fn edit_memo(&mut self, id: u16){
 
-    pub fn get_memo_mut(&mut self, id: u16)->Option<&mut Memo>{
-        self.memos.get_mut(&id)
-    }
 
-    pub fn list(&self)->impl Iterator<Item = String> + '_{
-        self.memos.values().map(|m|{
-            m.to_string()
-        })
-    }
+    //     Text::new("Edit").with_initial_value();
+    //     todo!()
+    // }
 }
 
 impl From<File> for MemApp{

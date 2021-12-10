@@ -1,20 +1,33 @@
 use std::str::FromStr;
 
-pub enum Command {
-    List,
-    ListTopic(String),
-    View(u16),
-    Add,
-    Edit,
+use crate::memo::Memo;
+
+pub enum SearchBy{
+    Any(String), 
+    Text(String),
+    Hashtag(String),
+    Topic(String)
 }
+
+pub enum Command {
+    List(Option<u16>),
+    ListTopic(String),
+    Search(SearchBy),
+    Get(u16),
+    CreateNew(Memo),
+    Edit(u16),
+}
+
 impl Command{
     pub fn long_list() -> Vec<String> {
         [
-            ("list"),
-            ("list topic"),
-            ("view"),
-            ("add"),
-            ("edit"),
+            "list",
+            "list topic",
+            "view",
+            "create",
+            "edit",
+            "save",
+            "clear",
 
             "exit"
         ]
@@ -25,11 +38,11 @@ impl Command{
 
     pub fn short_list() -> Vec<String> {
         [
-            ("l"),
-            ("lt"),
-            ("v"),
-            ("a"),
-            ("e"),
+            "l",
+            "lt",
+            "v",
+            "c",
+            "e",
 
             "x"
         ]
