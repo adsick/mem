@@ -1,4 +1,3 @@
-use std::fmt::write;
 use std::fs::{File, OpenOptions};
 use std::io::{Write, Seek, SeekFrom};
 
@@ -23,8 +22,6 @@ impl MemApp{
         };
         MemApp{data, memos}
     }
-
-
 
     pub fn edit_interactive(&mut self, id: u16){
         if let Some(memo) = self.memos.get_mut(id){
@@ -60,7 +57,7 @@ impl MemApp{
                 MemoField::Body => {
                     match action{
                         EditAction::Add => todo!(),
-                        EditAction::Remove => if let Ok(c @ true) = Confirm::new("remove body?").prompt(){memo.body.clear()},
+                        EditAction::Remove => if let Ok(true) = Confirm::new("remove body?").prompt(){memo.body.clear()},
                         EditAction::Edit => edit(&mut memo.body),
                     }
                 },
@@ -68,7 +65,7 @@ impl MemApp{
                     match action{
                         EditAction::Add => while let Ok(tag ) = input("add tag"){ if tag.is_empty(){break;} memo.add_tag(tag);},
                         EditAction::Remove => memo.tags.clear(),
-                        EditAction::Edit => edit(&mut memo.topic),
+                        EditAction::Edit => todo!(),
                     }
                 },
                 MemoField::Link => {

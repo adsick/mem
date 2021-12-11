@@ -1,16 +1,21 @@
+use crossterm::{
+    event, execute,
+    style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
+    ExecutableCommand,
+};
 use inquire::{Select, Text};
 use mem::{Command, MemApp};
+use std::io::{stdout, Write};
 fn main() {
     let mut app = MemApp::init("data.txt");
 
     let ll = Command::long_list();
-    let command_descriptions = ll.join("\n");
 
     let mut show_preview = true;
 
     loop {
         //println!("{}", command_descriptions);
-        if show_preview{
+        if show_preview {
             app.preview_list();
         }
         show_preview = true;
@@ -26,11 +31,11 @@ fn main() {
             "c" | "create" | "new" => {
                 app.create_new_memo_interactive();
             }
-            "e" | "edit" =>{
+            "e" | "edit" => {
                 let id = Text::new("id: ").prompt_skippable();
-                if let Ok(opt) = id{
-                let id: u16 = opt.unwrap().parse().unwrap_or(app.last_id());
-                app.edit_interactive(id)
+                if let Ok(opt) = id {
+                    let id: u16 = opt.unwrap().parse().unwrap_or(app.last_id());
+                    app.edit_interactive(id)
                 }
             }
             "s" | "save" => {
@@ -39,7 +44,14 @@ fn main() {
             "clear" => {
                 app.clear().unwrap();
             }
-            _ => println!("there is no such command"),
+            _ => execute!(
+                stdout(),
+                SetForegroundColor(Color::Black),
+                SetBackgroundColor(Color::Red),
+                Print("there is no such command\n".to_string()),
+                ResetColor
+            )
+            .unwrap(),
         }
     }
 
