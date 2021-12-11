@@ -4,19 +4,18 @@ use crate::Memo;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct Memos{
-    last_id: u16,
+    next_id: u16,
     free_idxs: HashSet<u16>,
     memos: BTreeMap<u16, Memo>,
 }
 
 impl Memos{
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self { Memos{next_id: 1, ..Default::default() } }
 
-    pub fn push(&mut self, memo: Option<Memo>)->&mut Memo{
-        self.last_id += 1;
-        let id = self.last_id;
-        let memo = self.memos.entry(id).or_insert(memo.unwrap_or_else(||Memo::new(id)));
-        memo
+    pub fn push(&mut self, mut memo: Memo)->&mut Memo{
+            memo.parse_tags();
+            self.next_id += 1;
+            self.memos.entry(memo.id()).or_insert(memo)
     }
 
     pub fn get(&self, id: u16)->Option<&Memo>{
@@ -31,8 +30,12 @@ impl Memos{
         self.memos.values()
     }
 
+    pub fn iter_mut(&mut self)->impl Iterator<Item = &mut Memo> + '_{
+        self.memos.values_mut()
+    }
+
     pub fn last_id(&self)->u16{
-        self.last_id
+        self.next_id
     }
 }
 

@@ -1,15 +1,8 @@
-use crossterm::{
-    event, execute,
-    style::{Color, Print, ResetColor, SetBackgroundColor, SetForegroundColor},
-    ExecutableCommand,
-};
+use crossterm::style::Color;
 use inquire::{Select, Text};
-use mem::{Command, MemApp};
-use std::io::{stdout, Write};
+use mem::{search::SearchQueryKind, MemApp, memo::MemoSearchQuery, print_colored, println_colored};
 fn main() {
     let mut app = MemApp::init("data.txt");
-
-    let ll = Command::long_list();
 
     let mut show_preview = true;
 
@@ -44,16 +37,28 @@ fn main() {
             "clear" => {
                 app.clear().unwrap();
             }
-            _ => execute!(
-                stdout(),
-                SetForegroundColor(Color::Black),
-                SetBackgroundColor(Color::Red),
-                Print("there is no such command\n".to_string()),
-                ResetColor
-            )
-            .unwrap(),
+            query => {
+
+
+
+                let qr = app.query(SearchQueryKind::Memo(MemoSearchQuery::Header(query)));
+                if !qr.is_empty(){
+                    println_colored(&"found in headers:", Color::Blue, Color::Black).unwrap();
+                    qr.list_results()
+                }
+    
+                let qr = app.query(SearchQueryKind::Memo(MemoSearchQuery::Content(query)));
+                if !qr.is_empty(){
+                    println_colored(&"found in contents:", Color::Cyan, Color::Black).unwrap();
+                    qr.list_results()
+                }
+                
+
+                show_preview = false}
+
         }
     }
 
     app.save();
 }
+

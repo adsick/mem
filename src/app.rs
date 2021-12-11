@@ -6,6 +6,8 @@ use inquire::error::InquireError;
 use crate::common::*;
 use crate::Memo;
 use crate::memos::Memos;
+
+use crate::search::{QueryResults, SearchQueryKind};
 pub struct MemApp{
     data: File,
     memos: Memos,
@@ -18,9 +20,17 @@ impl MemApp{
         if data.metadata().unwrap().len() > 0{
             from_reader(&data).unwrap()//.unwrap_or_default();
         } else {
-            Memos::default()
+            Memos::new()
         };
         MemApp{data, memos}
+    }
+
+    pub fn get_memo(&self, id: u16)->Option<&Memo>{
+        self.memos.get(id)
+    }
+
+    pub fn get_memo_mut(&mut self, id: u16)->Option<&mut Memo>{
+        self.memos.get_mut(id)
     }
 
     pub fn edit_interactive(&mut self, id: u16){
@@ -57,8 +67,8 @@ impl MemApp{
                 MemoField::Body => {
                     match action{
                         EditAction::Add => todo!(),
-                        EditAction::Remove => if let Ok(true) = Confirm::new("remove body?").prompt(){memo.body.clear()},
-                        EditAction::Edit => edit(&mut memo.body),
+                        EditAction::Remove => if let Ok(true) = Confirm::new("remove body?").prompt(){memo.body.clear()}, //note remove tags
+                        EditAction::Edit => {edit(&mut memo.body); memo.parse_tags()},
                     }
                 },
                 MemoField::Tag => {
@@ -90,11 +100,10 @@ impl MemApp{
     }
 
     pub fn create_new_memo_interactive(&mut self)->&mut Memo{
-        let mut memo = self.memos.push(None);
-
+        let mut memo = Memo::new(self.last_id());
         memo.header = Text::new("Header").with_default(&format!("memo#{}", memo.id())).prompt().unwrap_or_default();
         memo.body = Text::new("Body").prompt().unwrap_or_default();
-        memo
+        self.memos.push(memo)
     }
 
     pub fn list(&self){
@@ -107,15 +116,27 @@ impl MemApp{
             println!("{}", memo.preview())
         }
     }
+
+    pub fn execute_query<'m>(&'m self, query_kind: SearchQueryKind<'m>)->impl Iterator<Item = &Memo> + 'm{
+        match query_kind{
+            SearchQueryKind::Memo(query) =>self.memos.iter().filter_map(move |m|m.select(query.clone())) // TODO Remove .clone(),
+        }
+ 
+    }
+
+    pub fn query<'m>(&'m self, query: SearchQueryKind<'m>)->QueryResults<'m>{
+        QueryResults::from(self.execute_query(query))
+    }
+
+    pub fn search<'a>(&'a self, query: SearchQueryKind<'a>){
+        for memo in self.execute_query(query){
+            println!("{}", memo.preview())
+        }
+    }
+
     pub fn last_id(&self)->u16{
         self.memos.last_id()
     }
-    // pub fn edit_memo(&mut self, id: u16){
-
-
-    //     Text::new("Edit").with_initial_value();
-    //     todo!()
-    // }
 }
 
 impl From<File> for MemApp{

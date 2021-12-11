@@ -1,54 +1,32 @@
 use crate::memo::Memo;
 
-pub enum SearchBy{
-    Any(String), 
-    Text(String),
-    Hashtag(String),
-    Topic(String)
-}
+// pub enum Command {
+//     List(Option<u16>),
+//     ListTopic(String),
+//     Search(SearchBy),
+//     Get(u16),
+//     CreateNew(Memo),
+//     Edit(u16),
+// }
 
-pub enum Command {
-    List(Option<u16>),
-    ListTopic(String),
-    Search(SearchBy),
-    Get(u16),
-    CreateNew(Memo),
-    Edit(u16),
-}
+// impl Command{
+//     pub fn long_list() -> Vec<String> {
+//         [
+//             "list",
+//             "list topic",
+//             "view",
+//             "create",
+//             "edit",
+//             "save",
+//             "clear",
 
-impl Command{
-    pub fn long_list() -> Vec<String> {
-        [
-            "list",
-            "list topic",
-            "view",
-            "create",
-            "edit",
-            "save",
-            "clear",
-
-            "exit"
-        ]
-        .iter()
-        .map(|s| s.to_string())
-        .collect()
-    }
-
-    // pub fn short_list() -> Vec<String> {
-    //     [
-    //         "l",
-    //         "lt",
-    //         "v",
-    //         "c",
-    //         "e",
-
-    //         "x"
-    //     ]
-    //     .iter()
-    //     .map(|s| s.to_string())
-    //     .collect()
-    // }
-}
+//             "exit"
+//         ]
+//         .iter()
+//         .map(|s| s.to_string())
+//         .collect()
+//     }
+// }
 
 // impl FromStr for Command{
 //     type Err = &'static str;
