@@ -18,13 +18,20 @@ fn main() {
         //let ans = Select::new(">", ll.clone()).prompt();
 
         match ans.unwrap().as_str() {
-            "x" | "q" | "exit" => break,
+            "x" | "exit" => break,
             "l" | "list" => {
                 app.list();
                 show_preview = false;
             }
             "c" | "create" | "new" => {
                 app.create_new_memo_interactive();
+            }
+            "e" | "edit" =>{
+                let id = Text::new("id: ").prompt_skippable();
+                if let Ok(opt) = id{
+                let id: u16 = opt.unwrap().parse().unwrap_or(app.last_id());
+                app.edit_interactive(id)
+                }
             }
             "s" | "save" => {
                 app.save().unwrap();

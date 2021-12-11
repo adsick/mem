@@ -1,4 +1,4 @@
-pub use inquire::{Text, Select};
+pub use inquire::{Text, Select, Confirm};
 pub use std::collections::{HashMap, HashSet, BTreeMap, BTreeSet};
 pub use hex::{encode, decode};
 pub use rand::random;

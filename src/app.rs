@@ -1,5 +1,8 @@
+use std::fmt::write;
 use std::fs::{File, OpenOptions};
 use std::io::{Write, Seek, SeekFrom};
+
+use inquire::error::InquireError;
 
 use crate::common::*;
 use crate::Memo;
@@ -19,6 +22,64 @@ impl MemApp{
             Memos::default()
         };
         MemApp{data, memos}
+    }
+
+
+
+    pub fn edit_interactive(&mut self, id: u16){
+        if let Some(memo) = self.memos.get_mut(id){
+            let actions = vec![EditAction::Add, EditAction::Remove, EditAction::Edit];
+
+            let action =
+            Select::new("action: ", actions).prompt().unwrap();
+
+            fn input(message: &str)->Result<String, InquireError>{
+                Text::new(message).prompt()
+            }
+            fn edit(field: &mut String){
+                if let Ok(new_field) = Text::new("edit").with_initial_value(field).prompt(){
+                    *field = new_field 
+                }
+            }
+            let fields = vec![MemoField::Header, MemoField::Topic, MemoField::Body, MemoField::Tag];
+            match Select::new("field: ", fields).prompt().unwrap(){
+                MemoField::Header => {
+                    match action{
+                        EditAction::Add => todo!(),
+                        EditAction::Remove => todo!(),
+                        EditAction::Edit => edit(&mut memo.header),
+                    }
+                },
+                MemoField::Topic => {
+                    match action{
+                        EditAction::Add => todo!(),
+                        EditAction::Remove => todo!(),
+                        EditAction::Edit => edit(&mut memo.topic),
+                    }
+                },
+                MemoField::Body => {
+                    match action{
+                        EditAction::Add => todo!(),
+                        EditAction::Remove => if let Ok(c @ true) = Confirm::new("remove body?").prompt(){memo.body.clear()},
+                        EditAction::Edit => edit(&mut memo.body),
+                    }
+                },
+                MemoField::Tag => {
+                    match action{
+                        EditAction::Add => while let Ok(tag ) = input("add tag"){ if tag.is_empty(){break;} memo.add_tag(tag);},
+                        EditAction::Remove => memo.tags.clear(),
+                        EditAction::Edit => edit(&mut memo.topic),
+                    }
+                },
+                MemoField::Link => {
+                    todo!()
+                },
+            }
+
+        } else {
+            println!("memo number #{} does not exist.\n", id)
+        }
+
     }
 
     pub fn save(&mut self)->std::io::Result<()>{
@@ -49,6 +110,9 @@ impl MemApp{
             println!("{}", memo.preview())
         }
     }
+    pub fn last_id(&self)->u16{
+        self.memos.last_id()
+    }
     // pub fn edit_memo(&mut self, id: u16){
 
 
@@ -61,5 +125,45 @@ impl From<File> for MemApp{
     fn from(file: File) -> Self {
         let memos = from_reader(&file).unwrap();
         Self{memos, data: file}
+    }
+}
+
+
+enum EditAction{
+    Add,
+    Remove,
+    Edit
+}
+
+impl std::fmt::Display for EditAction{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let res = match self{
+            EditAction::Add => "add",
+            EditAction::Remove => "remove",
+            EditAction::Edit => "edit",
+        };
+        write!(f, "{}", res)
+    }
+}
+
+
+enum MemoField{
+    Header,
+    Topic,
+    Body,
+    Tag,
+    Link,
+}
+
+impl std::fmt::Display for MemoField{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let res = match self{
+            MemoField::Header => "header",
+            MemoField::Topic => "topic",
+            MemoField::Body => "body",
+            MemoField::Tag => "tag",
+            MemoField::Link => "link",
+        };
+        write!(f, "{}", res)
     }
 }

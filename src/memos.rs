@@ -31,5 +31,8 @@ impl Memos{
         self.memos.values()
     }
 
+    pub fn last_id(&self)->u16{
+        self.last_id
+    }
 }
 

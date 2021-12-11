@@ -6,7 +6,7 @@
 
 
 config ideas:
-* save on exit
+* save on exit, save on edit
 * return default action
 * command mappings
 * always show command list

@@ -1,3 +1,5 @@
+use chrono::Local;
+
 use crate::common::*;
 
 #[derive(Default, Serialize, Deserialize)]
@@ -6,15 +8,17 @@ pub struct Memo{
     pub header: String,
     pub topic: String,
     pub body: String,
-    pub notes: String,
-    tags: HashSet<String>,
-    links: HashSet<u16>,
-    //datetime: DateTime<TimeZone::>
+    //pub notes: String,
+    pub tags: HashSet<String>,
+    //pub links: HashSet<u16>,
+    #[cfg(feature = "time")]
+    datetime: Option<DateTime<Local>> //use option to derive default
 }
 
 impl Memo{
     pub fn new(id: u16)->Memo{
-        Memo{id, ..Default::default()}
+        let datetime = Some(Local::now());
+        Memo{id, datetime, ..Default::default()}
     }
 
     pub fn id(&self)->u16{
@@ -36,12 +40,25 @@ impl Memo{
 
 impl ToString for Memo{
     fn to_string(&self) -> String {
-        let Self{id, header, topic, body, ..} = self;
-        // let mut t = &String::new();
-        // if let Some(topic) = topic{
-        //     t = topic;
+        let Self{id, header, topic, body, tags, ..} = self;
+        let mut res = format!("#{} {}\n", id, header);
+        if !topic.is_empty(){
+            res += &format!("\ttopic: {}\n", topic);
+        }
 
-        // }
-        format!("#{} {}\ntopic: {}\n{}", self.id, header, topic, body)
+        #[cfg(feature = "time")]
+        if let Some(dt) = self.datetime{
+            res += &format!("from: {}\n", dt.format("%F %R"))
+        }
+
+        if !body.is_empty(){
+            res += &body;
+            res += "\n";
+        }
+        for tag in tags{
+            res += &format!("#{} ", tag);
+        }
+        //res += &tags.iter().map(|t|String::from("#") + t).collect::<Vec<_>>().join(" ");
+        res
     }
 }

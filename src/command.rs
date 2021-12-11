@@ -36,20 +36,20 @@ impl Command{
         .collect()
     }
 
-    pub fn short_list() -> Vec<String> {
-        [
-            "l",
-            "lt",
-            "v",
-            "c",
-            "e",
+    // pub fn short_list() -> Vec<String> {
+    //     [
+    //         "l",
+    //         "lt",
+    //         "v",
+    //         "c",
+    //         "e",
 
-            "x"
-        ]
-        .iter()
-        .map(|s| s.to_string())
-        .collect()
-    }
+    //         "x"
+    //     ]
+    //     .iter()
+    //     .map(|s| s.to_string())
+    //     .collect()
+    // }
 }
 
 // impl FromStr for Command{
