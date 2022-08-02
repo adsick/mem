@@ -164,7 +164,6 @@ impl std::fmt::Display for EditAction{
     }
 }
 
-
 enum MemoField{
     Header,
     Topic,
@@ -182,6 +181,6 @@ impl std::fmt::Display for MemoField{
             MemoField::Tag => "tag",
             MemoField::Link => "link",
         };
-        write!(f, "{}", res)
+        f.write_str(res)
     }
 }
