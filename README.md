@@ -36,6 +36,7 @@ we will pick some of them in the process of development.
 
 ### other
 - [chrono](https://github.com/chronotope/chrono)
+- strum
 - some utils for working with text
 - [notify](https://github.com/notify-rs/notify) (detects file changes)
 - [rhai](https://github.com/rhaiscript/rhai) in case we will need scripting/plugins
