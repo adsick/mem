@@ -1,7 +1,5 @@
-use color_eyre::owo_colors::OwoColorize;
-
 use crate::{Config, Docs};
-use std::path::{Path, PathBuf};
+use crate::common::*;
 
 // there are 2 approaches: root first and config first
 // with root first we specify the root (e.g. current dir) and load config from there

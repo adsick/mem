@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
-
-use crate::DocId;
+use crate::common::*;
+use crate::{DocId, ListId};
 
 /// per-list document id, e.g. in `note#3` 3 is a ListDocId
 pub type ListDocId = u32;
@@ -49,6 +49,4 @@ pub enum ListKind {
     Todo,
     Card,
     Read,
-    /// user-defined 
-    Name(String), // maybe specify type here as well?
 }

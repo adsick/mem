@@ -1,31 +1,13 @@
 pub mod note;
+pub mod descriptor;
+
+pub use descriptor::DocDescriptor;
 
 use crate::common::*;
-use crate::DocId;
-
 use note::Note;
 use serde::{Deserialize, Serialize};
 
 use strum::EnumDiscriminants;
-
-#[derive(Default, Deserialize, Serialize)]
-pub struct DocDescriptor {
-    id: DocId,
-    path: PathBuf,
-    kind: DocKind,
-    //meta
-    tags: HashSet<String>,
-}
-
-impl DocDescriptor {
-    pub fn id(&self) -> u32 {
-        self.id
-    }
-
-    pub fn path(&self) -> &PathBuf {
-        &self.path
-    }
-}
 
 // maybe use Strum for discriminants and other stuff? (https://docs.rs/strum/latest/strum/derive.EnumDiscriminants.html)
 // looks a bit like an overkill tho

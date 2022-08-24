@@ -10,3 +10,5 @@ pub(crate) use std::path::PathBuf;
 pub(crate) use std::path::Path;
 
 pub(crate) use std::collections::HashSet;
+
+pub use serde::{Serialize, Deserialize};

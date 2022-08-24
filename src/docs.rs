@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, path::{Path, PathBuf}, fs::DirEntry};
+use std::{collections::BTreeMap, path::Path};
 
 use crate::{Doc, Index};
 

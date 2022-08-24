@@ -8,6 +8,7 @@ use std::{
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     /// default path for documents, allows for running mem from any place
+    #[serde(default)] //None if missing
     pub default_path: Option<PathBuf>,
 }
 
