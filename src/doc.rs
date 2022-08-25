@@ -1,5 +1,5 @@
-pub mod note;
 pub mod descriptor;
+pub mod note;
 
 pub use descriptor::DocDescriptor;
 
@@ -35,17 +35,16 @@ impl Doc {
         Self::try_from(descriptor)
     }
 
-    fn note(content: &str) -> Result<Self>{
+    fn note(content: &str) -> Result<Self> {
         Ok(Doc::Note(Note::from_str(&content)?))
     }
 }
 
-impl TryFrom<DocDescriptor> for Doc{
+impl TryFrom<DocDescriptor> for Doc {
     fn try_from(descriptor: DocDescriptor) -> Result<Self> {
         let content = read_to_string(descriptor.path)?;
 
-        let doc =
-        match descriptor.kind{
+        let doc = match descriptor.kind {
             DocKind::Empty => Doc::Empty,
             DocKind::Note => Doc::note(&content)?,
             DocKind::Todo => todo!(),
@@ -58,7 +57,5 @@ impl TryFrom<DocDescriptor> for Doc{
 
     type Error = Error;
 }
-
-
 
 pub trait Document: Display {}

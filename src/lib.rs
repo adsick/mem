@@ -1,3 +1,7 @@
+#![allow(unused)]
+
+pub mod common;
+
 pub mod app;
 pub use app::*;
 
@@ -16,4 +20,7 @@ pub use index::*;
 pub mod list;
 pub use list::*;
 
-pub mod common;
+pub mod tag;
+pub use tag::*;
+
+pub mod utils;

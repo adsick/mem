@@ -1,5 +1,5 @@
-use crate::{Config, Docs};
 use crate::common::*;
+use crate::{Config, Docs};
 
 // there are 2 approaches: root first and config first
 // with root first we specify the root (e.g. current dir) and load config from there
@@ -27,10 +27,8 @@ impl App {
         Self { root, config, docs }
     }
 
-    pub fn run(&mut self, args: impl Iterator<Item = String>) {}
-
-    fn load_docs(&mut self) {
-        
+    pub fn run(&mut self, args: impl Iterator<Item = String>) {
+        todo!();
     }
 }
 

@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use crate::common::*;
 use crate::{DocId, ListId};
 
@@ -6,6 +5,7 @@ use crate::{DocId, ListId};
 pub type ListDocId = u32;
 
 pub struct List {
+    // consider rewriting it using `DocKind` and maybe list names/paths
     kind: ListKind,
     docs: BTreeMap<ListDocId, DocId>,
     // lists: BTreeSet<ListId>,

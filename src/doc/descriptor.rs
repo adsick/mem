@@ -1,7 +1,7 @@
 use crate::common::*;
 use crate::{DocId, DocKind};
 
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 pub struct DocDescriptor {
     pub id: DocId,
     pub path: PathBuf,

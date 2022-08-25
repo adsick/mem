@@ -19,7 +19,7 @@ impl Config {
         dir.push(Path::new("mem/"));
 
         dbg!(&dir);
-        
+
         let content = read_to_string(dir)?;
         let config = toml::from_str(&content)?;
         Ok(config)
@@ -29,5 +29,4 @@ impl Config {
         let config = toml::from_str(&content)?;
         Ok(config)
     }
-    
 }
