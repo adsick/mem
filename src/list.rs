@@ -6,16 +6,17 @@ pub type ListDocId = u32;
 
 pub struct List {
     // consider rewriting it using `DocKind` and maybe list names/paths
-    kind: ListKind,
+    // kind: ListKind,
+    path: PathBuf,
     docs: BTreeMap<ListDocId, DocId>,
     // lists: BTreeSet<ListId>,
     next_list_doc_id: ListDocId,
 }
 
 impl List {
-    pub fn new(kind: ListKind) -> Self {
+    pub fn new(path: PathBuf) -> Self {
         Self {
-            kind,
+            path,
             docs: Default::default(),
             // lists: Default::default(),
             next_list_doc_id: 1,

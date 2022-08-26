@@ -11,9 +11,6 @@ pub use config::*;
 pub mod doc;
 pub use doc::*;
 
-pub mod docs;
-pub use docs::*;
-
 pub mod index;
 pub use index::*;
 

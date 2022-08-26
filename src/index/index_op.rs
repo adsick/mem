@@ -1,7 +1,7 @@
 use super::*;
 
 pub struct IndexOp<'i> {
-    index: &'i Index,
+    index: &'i Index, // todo: take ref to lists maybe
     list_doc_id: ListDocId,
 }
 
@@ -18,14 +18,14 @@ impl<'i> IndexOp<'i> {
             .and_then(|list| list.get(self.list_doc_id))
     }
 
-    // get doc id using list kind
-    pub fn kind(&self, kind: &ListKind) -> Option<DocId> {
-        let Index {
-            list_id_by_kind,
-            list_by_list_id,
-            ..
-        } = self.index;
-        let list_id = list_id_by_kind.get(kind)?;
-        list_by_list_id.get(list_id)?.get(self.list_doc_id)
-    }
+    // // get doc id using list kind
+    // pub fn kind(&self, kind: &ListKind) -> Option<DocId> {
+    //     let Index {
+    //         list_id_by_kind,
+    //         list_by_list_id,
+    //         ..
+    //     } = self.index;
+    //     let list_id = list_id_by_kind.get(kind)?;
+    //     list_by_list_id.get(list_id)?.get(self.list_doc_id)
+    // }
 }
