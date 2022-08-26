@@ -11,13 +11,9 @@ pub use docs::*;
 pub mod lists;
 pub use lists::*;
 
-pub use crate::List;
-pub use std::collections::HashMap;
+use crate::List;
+use std::collections::HashMap;
 use std::path::PathBuf;
-
-pub type ListId = u32;
-
-// it can be logically refactored to Index { Docs, Lists}
 
 #[derive(Default)]
 pub struct Index {
