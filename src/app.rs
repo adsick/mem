@@ -19,7 +19,7 @@ impl App {
         // try to load docs from the path
         let config = Config::load().unwrap();
 
-        let mut index = Index::default();
+        let mut index = Index::new(root.clone());
         // let mode = config.mode;
 
         let root = config.default_path.to_owned().unwrap_or(root);

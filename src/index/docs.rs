@@ -7,6 +7,7 @@ pub type DocId = u32;
 
 #[derive(Default)]
 pub struct Docs {
+    // maybe store docs by their list ids, that should be more efficient
     doc_id_by_doc_path: HashMap<PathBuf, DocId>,
 
     doc_descriptor_by_doc_id: BTreeMap<DocId, DocDescriptor>,
@@ -17,17 +18,11 @@ pub struct Docs {
 
 impl Docs {
     // creates a new empty document without indexing it (?)
-    pub fn create_new(&mut self) -> &mut Doc {
+    pub fn create(&mut self) -> &mut Doc {
         let id = self.next_doc_id;
         self.next_doc_id += 1;
         // I use this trick to return a mutable reference to the document.
         self.doc_by_doc_id.entry(id).or_default()
-    }
-
-    // maybe scan is only for the index, idk
-    pub fn scan(&mut self, path: &Path) -> Result<()> {
-        // self.index.scan(path)
-        todo!();
     }
 
     pub fn index(&mut self, descriptor: DocDescriptor) {

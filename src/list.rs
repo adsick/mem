@@ -5,8 +5,6 @@ use crate::{DocId, ListId};
 pub type ListDocId = u32;
 
 pub struct List {
-    // consider rewriting it using `DocKind` and maybe list names/paths
-    // kind: ListKind,
     path: PathBuf,
     docs: BTreeMap<ListDocId, DocId>,
     // lists: BTreeSet<ListId>,
@@ -38,6 +36,10 @@ impl List {
 
     pub fn get(&self, id: ListDocId) -> Option<DocId> {
         self.docs.get(&id).copied()
+    }
+
+    pub fn path(&self) -> &PathBuf {
+        &self.path
     }
 }
 
