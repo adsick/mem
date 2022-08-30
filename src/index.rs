@@ -36,11 +36,27 @@ impl Index {
 
     // todo: decide whether to use absolute or relative paths.
     // I personally want relative, but not sure if it gonna work.
+    // upd: we call scan with an absolute path,
+    // and then make relative paths for contained lists
+
     /// traverses given directory in order to fetch some data from it.
-    pub fn scan(&mut self, path: &Path) -> Result<()> {
-        // check path long way to get errors (e.g. missing)
+    pub fn scan(&mut self, mut path: &Path) -> Result<()> {
+        // check path long way (using .metadata()) to get errors (e.g. missing)
         if path.metadata()?.is_dir() {
-            self.lists.create_if_not_exists(path.to_owned());
+            
+            // convert abs path to relative, note this is not working (produces empty path, need to fix)
+            // a more dumb but working solution would be
+            // to strip prefix for every entry (in scan_recursive), but that is not so efficient imo
+            if path.is_absolute(){
+                let root_path = self.lists.root().path();
+                println!("trying to strip prefix {root_path:?} from {path:?}");
+                path = path.strip_prefix(root_path)?;
+                
+                println!("converted absolute path to relative: {:?}", path);
+                // consider crate `relative_path`
+            }
+
+
             self.scan_recursive(path, 0); // the list tree begins from 0 id
             Ok(())
         } else {
@@ -48,7 +64,8 @@ impl Index {
         }
     }
 
-    // list_id is the list we are currently in
+    // path is the path that we traverse now
+    // list_id points the list we are currently in
     fn scan_recursive(&mut self, path: &Path, list_id: ListId) -> Result<()> {
         for entry in path.read_dir()? {
             let entry = entry?;
@@ -62,11 +79,16 @@ impl Index {
 
                 self.scan_recursive(&path, id);
             } else if path.is_file() {
-                // check if this file is already known
-                if let Some(id) = self.docs.get_doc_by_path(&path) {
-                    // file already known
-                } else {
-                }
+
+
+
+
+                // // check if this file is already known
+                // if let Some(id) = self.docs.get_doc_by_path(&path) {
+                //     // file is already known
+                // } else {
+                //     // file is not known
+                // }
             }
         }
         Ok(())
@@ -80,7 +102,11 @@ mod tests {
     use super::*;
     #[test]
     fn basic() {
-        let mut index = Index::new(home_dir().unwrap().join("mem/"));
+        // todo: move tests to appropriate directory to not break your mems
+        let mem_dir = home_dir().unwrap().join("mem/");
+
+        assert!(std::env::set_current_dir(&mem_dir).is_ok());
+        let mut index = Index::new(mem_dir);
         // assert_eq!(index.get(0).id(0), None);
 
         index.scan(&PathBuf::from_str(".").unwrap());

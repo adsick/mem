@@ -1,15 +1,12 @@
 use std::{collections::BTreeMap, path::Path};
 
 use crate::common::*;
-use crate::{Doc, DocDescriptor};
+use crate::{Doc, DocDescriptor, ListId};
 
 pub type DocId = u32;
 
 #[derive(Default)]
 pub struct Docs {
-    // maybe store docs by their list ids, that should be more efficient
-    doc_id_by_doc_path: HashMap<PathBuf, DocId>,
-
     doc_descriptor_by_doc_id: BTreeMap<DocId, DocDescriptor>,
     doc_by_doc_id: BTreeMap<DocId, Doc>,
 
@@ -28,12 +25,12 @@ impl Docs {
     pub fn index(&mut self, descriptor: DocDescriptor) {
         let DocDescriptor {
             id,
-            path,
+            name,
+            list,
             kind,
             tags,
         } = descriptor.clone();
 
-        self.doc_id_by_doc_path.insert(path.clone(), id);
         self.doc_descriptor_by_doc_id.insert(id, descriptor);
 
         todo!()
@@ -59,13 +56,13 @@ impl Docs {
         self.doc_by_doc_id.get_mut(&id)
     }
 
-    pub fn get_doc_by_path(&self, path: &Path) -> Option<&Doc> {
-        let id = self.doc_id_by_doc_path.get(path)?;
-        self.doc_by_doc_id.get(&id)
-    }
+    // pub fn get_doc_by_path(&self, path: &Path) -> Option<&Doc> {
+    //     let id = self.doc_id_by_list_id.get(path)?;
+    //     self.doc_by_doc_id.get(&id)
+    // }
 
-    pub fn get_doc_by_path_mut(&mut self, path: &Path) -> Option<&mut Doc> {
-        let id = self.doc_id_by_doc_path.get(path)?;
-        self.doc_by_doc_id.get_mut(&id)
-    }
+    // pub fn get_doc_by_path_mut(&mut self, path: &Path) -> Option<&mut Doc> {
+    //     let id = self.doc_id_by_list_id.get(path)?;
+    //     self.doc_by_doc_id.get_mut(&id)
+    // }
 }

@@ -5,6 +5,7 @@ use crate::List;
 pub type ListId = u32;
 
 pub struct Lists {
+    // maybe refactor it to be in Index
     root: List,
     // now I'm not sure about lists and their kinds
     // list_id_by_kind: HashMap<ListKind, ListId>,
@@ -25,8 +26,7 @@ impl Lists {
         }
     }
 
-    pub fn create(&mut self, path: PathBuf) -> ListId {
-        // self.list_id_by_kind.try_insert(path, self.next_list_id)
+    pub fn create_relative(&mut self, path: PathBuf) -> ListId {
         let list_id = self.next_list_id;
 
         self.list_by_list_id
@@ -41,24 +41,30 @@ impl Lists {
         list_id
     }
 
+    // todo: rename
+
     // creates a list if there is no such, returns it's id in Ok variant,
     // if there was list returns Err(id)
-    pub fn create_if_not_exists(&mut self, path: PathBuf) -> Result<ListId, ListId> {
+    pub fn create_if_not_exists(&mut self, relative_path: PathBuf) -> Result<ListId, ListId> {
         // you should not call this method with root path
-        if self.root.path() == &path {
+        if self.root.path() == &relative_path {
             return Err(0);
         }
-        assert!(!path.starts_with(self.root.path()), "method 'create_if_not_exists was called with a path that is not inside the root directory, abort");
-        let path_str = path.to_string_lossy().to_string();
+        // assert!(!relative_path.starts_with(self.root.path()), "method 'create_if_not_exists was called with a path that is not inside the root directory, abort");
+        let path_str = relative_path.to_string_lossy().to_string();
 
         if let Some(id) = self.list_id_by_path.get(&path_str) {
             // case where list already exists - we just return it's id
             Err(*id)
         } else {
             // the list does not exist, create it
-            let id = self.create(path.clone());
-            println!("created a new list, path = {:?}, id = {}", path, id);
+            let id = self.create_relative(relative_path.clone()); // todo: double check relativity
+            println!("created a new list, path = {:?}, id = {}", relative_path, id);
             Ok(id)
         }
+    }
+
+    pub fn root(&self) -> &List {
+        &self.root
     }
 }
