@@ -32,10 +32,10 @@ impl Lists {
         self.list_by_list_id
             .insert(self.next_list_id, List::new(path.clone()));
 
-        // todo: decide how to store list paths and maybe write a normalization method for it.
-
         self.list_id_by_path
             .insert(path.to_string_lossy().to_string(), list_id);
+
+        println!("created a new list, path = {path:?}, id = {}", list_id);
 
         self.next_list_id += 1;
         list_id
@@ -45,22 +45,21 @@ impl Lists {
 
     // creates a list if there is no such, returns it's id in Ok variant,
     // if there was list returns Err(id)
-    pub fn create_if_not_exists(&mut self, relative_path: PathBuf) -> Result<ListId, ListId> {
-        assert!(relative_path.is_relative());
+    pub fn create_if_not_exists<'a>(
+        &mut self,
+        path: impl Into<Cow<'a, Path>>,
+    ) -> Result<ListId, ListId> {
+        let path = path.into();
+        assert!(path.is_relative());
 
-        // assert!(!relative_path.starts_with(self.root.path()), "method 'create_if_not_exists was called with a path that is not inside the root directory, abort");
-        let path_str = relative_path.to_string_lossy().to_string();
+        let path_str = path.to_string_lossy();
 
-        if let Some(id) = self.list_id_by_path.get(&path_str) {
+        if let Some(id) = self.list_id_by_path.get(path_str.as_ref()) {
             // case where list already exists - we just return it's id
             Err(*id)
         } else {
             // the list does not exist, create it
-            let id = self.create_relative(relative_path.clone()); // todo: double check relativity
-            println!(
-                "created a new list, path = {:?}, id = {}",
-                relative_path, id
-            );
+            let id = self.create_relative(path.into_owned());
             Ok(id)
         }
     }
