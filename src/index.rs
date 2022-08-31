@@ -62,11 +62,11 @@ impl Index {
                 // create list if it does not exist
                 let root_path = self.lists.root().path();
                 let list_path = path.strip_prefix(root_path)?;
-                let (Ok(id) | Err(id)) = self.lists.create_if_not_exists(list_path.to_owned()); // into_ok_or_err (unstable, https://doc.rust-lang.org/std/result/enum.Result.html#method.into_ok_or_err)
+                let (Ok(next_list_id) | Err(next_list_id)) =
+                    self.lists.create_if_not_exists(list_path.to_owned()); // into_ok_or_err (unstable, https://doc.rust-lang.org/std/result/enum.Result.html#method.into_ok_or_err)
 
-                self.scan_recursive(&path, id);
+                self.scan_recursive(&path, next_list_id);
             } else if path.is_file() {
-
                 // todo: decide how to handle the case where we are in the root list.
                 // maybe delegate .get_by_name to the Lists collection (.get_doc_by_name then)... hm, not so good
                 // maybe write an index_op builder for that?
@@ -80,7 +80,7 @@ impl Index {
                     .lists
                     .get_list_by_id(list_id)
                     .unwrap()
-                    .get_by_name(&filename)  
+                    .get_by_name(&filename)
                 {
                     // doc is known, check if it has changed (and update if has)
                     let doc = self.docs.get_doc_mut(doc_id).unwrap();
