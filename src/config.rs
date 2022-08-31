@@ -28,9 +28,12 @@ impl Config {
     pub fn load_from(path: &Path) -> Result<Config> {
         let config = if let Ok(content) = read_to_string(&path) {
             let mut config: Config = toml::from_str(&content)?;
+            println!("successfully loaded config from {path:?}");
+
             let dp = &mut config.default_path;
 
             if let Some(dp) = dp {
+                println!("default path: {dp:?}");
                 if let Some(new_path) = expand_tilde(&dp) {
                     *dp = new_path;
                 }

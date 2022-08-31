@@ -7,6 +7,9 @@ pub type ListDocId = u32;
 pub struct List {
     path: PathBuf,
     docs: BTreeMap<ListDocId, DocId>,
+
+    // doc ids by their names in this list
+    names: BTreeMap<String, DocId>, // decide whether to use DocId or ListDocId
     // lists: BTreeSet<ListId>,
     next_list_doc_id: ListDocId,
 }
@@ -16,6 +19,7 @@ impl List {
         Self {
             path,
             docs: Default::default(),
+            names: Default::default(),
             // lists: Default::default(),
             next_list_doc_id: 1,
         }
@@ -34,8 +38,14 @@ impl List {
     //     self.lists.insert(id)
     // }
 
-    pub fn get(&self, id: ListDocId) -> Option<DocId> {
+    // returns Some(DocId) by ListDocId, returns None if missing
+    pub fn get_by_id(&self, id: ListDocId) -> Option<DocId> {
         self.docs.get(&id).copied()
+    }
+
+    // returns Some(DocId) by name, returns None if missing
+    pub fn get_by_name(&self, name: &str) -> Option<DocId> {
+        self.names.get(name).copied()
     }
 
     pub fn path(&self) -> &PathBuf {

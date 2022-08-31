@@ -42,22 +42,8 @@ impl Index {
     /// traverses given directory in order to fetch some data from it.
     pub fn scan(&mut self, mut path: &Path) -> Result<()> {
         // check path long way (using .metadata()) to get errors (e.g. missing)
-        if path.metadata()?.is_dir() {
-            
-            // convert abs path to relative, note this is not working (produces empty path, need to fix)
-            // a more dumb but working solution would be
-            // to strip prefix for every entry (in scan_recursive), but that is not so efficient imo
-            if path.is_absolute(){
-                let root_path = self.lists.root().path();
-                println!("trying to strip prefix {root_path:?} from {path:?}");
-                path = path.strip_prefix(root_path)?;
-                
-                println!("converted absolute path to relative: {:?}", path);
-                // consider crate `relative_path`
-            }
-
-
-            self.scan_recursive(path, 0); // the list tree begins from 0 id
+        if path.metadata()?.is_dir() && path.is_absolute() {
+            self.scan_recursive(path, 0); // the list tree begins from 0 (root id)
             Ok(())
         } else {
             Err(Error::msg(format!("malformed path: {:?}", path)))
@@ -71,24 +57,36 @@ impl Index {
             let entry = entry?;
             let path = entry.path();
             if path.is_dir() {
-                println!("dir: {:?}", &path);
+                println!("scanning dir: {path:?}");
 
                 // create list if it does not exist
-                // need to come up with a method of providing relative path.
-                let (Ok(id) | Err(id)) = self.lists.create_if_not_exists(path.clone()); // into_ok_or_err (unstable, https://doc.rust-lang.org/std/result/enum.Result.html#method.into_ok_or_err)
+                let root_path = self.lists.root().path();
+                let list_path = path.strip_prefix(root_path)?;
+                let (Ok(id) | Err(id)) = self.lists.create_if_not_exists(list_path.to_owned()); // into_ok_or_err (unstable, https://doc.rust-lang.org/std/result/enum.Result.html#method.into_ok_or_err)
 
                 self.scan_recursive(&path, id);
             } else if path.is_file() {
 
+                // todo: decide how to handle the case where we are in the root list.
+                // maybe delegate .get_by_name to the Lists collection (.get_doc_by_name then)... hm, not so good
+                // maybe write an index_op builder for that?
 
+                // another way is to simply store the root list in the map, but that is not perfect too, we might want
+                // the root list to be of different type in the future.
 
-
-                // // check if this file is already known
-                // if let Some(id) = self.docs.get_doc_by_path(&path) {
-                //     // file is already known
-                // } else {
-                //     // file is not known
-                // }
+                // here we try to find this file in currently traversed list
+                let filename = path.file_name().unwrap().to_string_lossy();
+                if let Some(doc_id) = self
+                    .lists
+                    .get_list_by_id(list_id)
+                    .unwrap()
+                    .get_by_name(&filename)  
+                {
+                    // doc is known, check if it has changed (and update if has)
+                    let doc = self.docs.get_doc_mut(doc_id).unwrap();
+                } else {
+                    // doc is unknown, need to create it
+                }
             }
         }
         Ok(())

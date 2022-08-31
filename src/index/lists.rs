@@ -22,7 +22,7 @@ impl Lists {
             root: List::new(path),
             list_by_list_id: Default::default(),
             list_id_by_path: Default::default(),
-            next_list_id: Default::default(),
+            next_list_id: 1,
         }
     }
 
@@ -41,15 +41,13 @@ impl Lists {
         list_id
     }
 
-    // todo: rename
+    // todo: rename, maybe change to accept String, not PathBuf
 
     // creates a list if there is no such, returns it's id in Ok variant,
     // if there was list returns Err(id)
     pub fn create_if_not_exists(&mut self, relative_path: PathBuf) -> Result<ListId, ListId> {
-        // you should not call this method with root path
-        if self.root.path() == &relative_path {
-            return Err(0);
-        }
+        assert!(relative_path.is_relative());
+
         // assert!(!relative_path.starts_with(self.root.path()), "method 'create_if_not_exists was called with a path that is not inside the root directory, abort");
         let path_str = relative_path.to_string_lossy().to_string();
 
@@ -59,12 +57,19 @@ impl Lists {
         } else {
             // the list does not exist, create it
             let id = self.create_relative(relative_path.clone()); // todo: double check relativity
-            println!("created a new list, path = {:?}, id = {}", relative_path, id);
+            println!(
+                "created a new list, path = {:?}, id = {}",
+                relative_path, id
+            );
             Ok(id)
         }
     }
 
     pub fn root(&self) -> &List {
         &self.root
+    }
+
+    pub fn get_list_by_id(&self, id: ListId) -> Option<&List> {
+        self.list_by_list_id.get(&id)
     }
 }

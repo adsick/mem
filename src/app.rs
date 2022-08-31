@@ -18,13 +18,16 @@ impl App {
     pub fn new(root: PathBuf) -> Self {
         // try to load docs from the path
         let config = Config::load().unwrap();
-        
+
         let root = config.default_path.to_owned().unwrap_or(root);
 
         let mut index = Index::new(root.clone());
         // let mode = config.mode;
 
-        assert!(std::env::set_current_dir(&root).is_ok(), "unable to set current directory, abort");
+        assert!(
+            std::env::set_current_dir(&root).is_ok(),
+            "unable to set current directory, abort"
+        );
         index.scan(&root).unwrap();
 
         Self {

@@ -1,5 +1,5 @@
 use crate::common::*;
-use crate::{ListId, DocId, DocKind};
+use crate::{DocId, DocKind, ListId};
 
 #[derive(Clone, Default, Deserialize, Serialize)]
 pub struct DocDescriptor {
