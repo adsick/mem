@@ -12,12 +12,10 @@ pub mod lists;
 pub use lists::*;
 
 use crate::List;
-use std::collections::HashMap;
-use std::path::PathBuf;
 
 pub struct Index {
-    docs: Docs,
     lists: Lists,
+    docs: Docs,
 }
 
 impl Index {
@@ -54,13 +52,14 @@ impl Index {
             }
             Ok(())
         } else {
-            Err(Error::msg(format!("malformed path: {:?}", path)))
+            Err(ErrReport::msg(format!("malformed path: {:?}", path)))
         }
     }
 
     // special case because Lists.root is not just 0th list
     fn scan_root(&mut self) -> Result<()> {
         let path = self.lists.root().path();
+        println!("scanning root initiated");
         for entry in path.read_dir()? {
             let entry = entry?;
             let path = entry.path();
@@ -76,16 +75,29 @@ impl Index {
 
                 self.scan_recursive(&path, next_list_id);
             } else if path.is_file() {
+                // we may just report an error here, no need to leave
+                // todo: support different document types?
+                let content = read_to_string(&path).map(|c| Doc::note(c));
+
                 // here we try to find this file in currently traversed list
                 let filename = path.file_name().unwrap().to_string_lossy();
+                // decide what to do with extensions
                 if let Some(doc_id) = self.lists.root().get_by_name(&filename) {
                     // doc is known, check if it has changed (and update if has)
                     let doc = self.docs.get_doc_mut(doc_id).unwrap();
+
+                    match doc {
+                        Doc::New => todo!(),
+                        Doc::Note(n) => {}
+                        Doc::Todo => todo!(),
+                        Doc::Card => todo!(),
+                        Doc::Read => todo!(),
+                    }
                 } else {
                     // doc is unknown, need to create it
                 }
             }
-        }
+        } // maybe the root should not contain any files?
         Ok(())
     }
 

@@ -1,4 +1,4 @@
-pub use color_eyre::eyre::{ErrReport, Error, Result};
+pub use color_eyre::eyre::{ErrReport, Result};
 pub use dirs::{config_dir, document_dir};
 
 pub use std::fmt::Display;

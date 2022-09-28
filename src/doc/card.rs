@@ -1,7 +1,9 @@
 
 
 pub struct Card{
-    a_side: String,
-    b_side: String,
+    front: String,
+    back: String,
     note: Option<String> //maybe link to doc?
 }
+
+// card stats like last seen or times seen.

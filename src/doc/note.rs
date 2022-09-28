@@ -1,6 +1,7 @@
 use std::str::FromStr;
 
-use crate::common::*;
+use crate::parsing::paragraph;
+use crate::{common::*, split_paragraphs};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -13,10 +14,13 @@ pub struct Note {
 }
 
 impl Note {
-    pub fn new(text: String) -> Self {
-        let paragraphs = vec![text]; // todo
+    pub fn new(text: String) -> Result<Self> {
+        let paragraphs = split_paragraphs(&text)?
+            .into_iter()
+            .map(str::to_string)
+            .collect();
 
-        Self { paragraphs }
+        Ok(Self { paragraphs })
     }
 
     pub fn add_paragraph(&mut self, paragraph: String) -> &mut Self {
@@ -34,9 +38,18 @@ impl Note {
 }
 
 impl FromStr for Note {
-    type Err = Error;
+    type Err = ErrReport;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        // not the best solution I guess
+        let paragraphs = split_paragraphs(s)?.iter().map(|s| s.to_string()).collect();
+        Ok(Note { paragraphs })
     }
 }
+
+// impl From<String> for Note {
+//     fn from(str: String) -> Self {
+//         // this is cringe
+
+//     }
+// }

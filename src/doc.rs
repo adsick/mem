@@ -17,7 +17,7 @@ use strum::EnumDiscriminants;
 pub enum Doc {
     #[default]
     #[strum_discriminants(default)]
-    Empty,
+    New,
 
     Note(Note),
     Todo,
@@ -28,15 +28,15 @@ pub enum Doc {
 impl Doc {
     // consider separate new methods for each doc kind
     pub fn new() -> Self {
-        Self::Empty
+        Self::New
     }
 
     // pub fn load(descriptor: DocDescriptor) -> Result<Self> {
     //     Self::try_from(descriptor)
     // }
 
-    fn note(content: &str) -> Result<Self> {
-        Ok(Doc::Note(Note::from_str(&content)?))
+    pub fn note(content: String) -> Result<Self> {
+        Ok(Doc::Note(Note::new(content)?))
     }
 }
 
@@ -58,4 +58,7 @@ impl Doc {
 //     type Error = Error;
 // }
 
-pub trait Document: Display {}
+// pub trait Document: Display {
+//     fn from_string(str: String) -> Self;
+
+// }

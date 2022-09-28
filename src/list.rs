@@ -4,12 +4,16 @@ use crate::{DocId, ListId};
 /// per-list document id, e.g. in `note#3` 3 is a ListDocId
 pub type ListDocId = u32;
 
-pub struct List {
-    path: PathBuf,
-    docs: BTreeMap<ListDocId, DocId>,
+mod descriptor;
 
+pub use descriptor::*;
+
+pub struct List {
+    docs: BTreeMap<ListDocId, DocId>, // this could be a simple vec, but we may support deletion (?)
+    descriptor: ListDescriptor,
     // doc ids by their names in this list
-    names: BTreeMap<String, DocId>, // decide whether to use DocId or ListDocId
+    // a little redundant btw
+    names: BTreeMap<String, DocId>, // decide whether to use DocId or ListDocId (or both)
     // lists: BTreeSet<ListId>,
     next_list_doc_id: ListDocId,
 }
@@ -17,7 +21,7 @@ pub struct List {
 impl List {
     pub fn new(path: PathBuf) -> Self {
         Self {
-            path,
+            descriptor: ListDescriptor::new(path),
             docs: Default::default(),
             names: Default::default(),
             // lists: Default::default(),
@@ -49,17 +53,6 @@ impl List {
     }
 
     pub fn path(&self) -> &PathBuf {
-        &self.path
+        &self.descriptor.path()
     }
-}
-
-#[derive(PartialEq, Eq, Hash)]
-pub enum ListKind {
-    /// universal list for all the docs
-    Doc,
-    /// predefined lists for different doctypes
-    Note,
-    Todo,
-    Card,
-    Read,
 }

@@ -9,19 +9,20 @@ mem can be used as a cli application with custom commands syntax, it also will i
 `mem todo feed a cat`
 
 > created todo#7
-> `mem done todo#7`
+
+`mem done todo#7`
 > todo#7 done
 
 `mem list todo`
 
 `mem undo`
 
-## Structure
+## Structure>
 
 ### indexing
 
 each document assigned a unique id, it is used to refer to documents internally.
-documents could be accessed by their id, but that is not so user-friendly, instead we will 'classify' the document like so: note#4, todo#7, rust-note#2 etc. this literally means "the fourth note, the seventh todo and the second note which has rust topic.
+documents could be accessed by their ids, but that is not so user-friendly, instead we will 'classify' the document like so: note#4, todo!7, rust#2 etc. this literally means "the fourth note, the seventh todo and the second note which has rust topic.
 
 ### Lists
 
@@ -40,7 +41,7 @@ it may even recognize the type of content or scalp web pages in the future to au
 
 ## Commands
 
-`> mem todo feed the cat #today`
+`> mem todo "feed the cat" +today`
 `created a new todo#3 deadline: today`
 
 ## Configs

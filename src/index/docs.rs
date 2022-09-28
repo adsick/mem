@@ -1,6 +1,7 @@
 use std::{collections::BTreeMap, path::Path};
 
 use crate::common::*;
+use crate::descriptor::DocMetadata;
 use crate::{Doc, DocDescriptor, ListId};
 
 pub type DocId = u32;
@@ -8,6 +9,7 @@ pub type DocId = u32;
 #[derive(Default)]
 pub struct Docs {
     doc_descriptor_by_doc_id: BTreeMap<DocId, DocDescriptor>,
+    doc_meta_by_doc_id: BTreeMap<DocId, DocMetadata>, // maybe merge with above
     doc_by_doc_id: BTreeMap<DocId, Doc>,
 
     next_doc_id: DocId,
@@ -28,7 +30,6 @@ impl Docs {
             name,
             list,
             kind,
-            tags,
         } = descriptor.clone();
 
         self.doc_descriptor_by_doc_id.insert(id, descriptor);
