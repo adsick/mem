@@ -11,17 +11,11 @@ use nom::multi::{many0, many1, many_m_n};
 
 use nom::sequence::{pair, terminated};
 
-use nom::FlatMap;
-// use nom::Err;
 use nom::error::Error;
 use nom::error::ErrorKind;
-use nom::Finish;
 use nom::IResult;
 
-use crate::common::Result; //color eyre
-
 pub fn split_paragraphs(text: &str) -> Result<Vec<&str>> {
-    // let mut split = many1(paragraph);
     match many1(paragraph)(text) {
         Ok((_, v)) => Ok(v),
         Err(e) => Err(ErrReport::msg(format!("err splitting paragraphs: {e:?}\n"))),
@@ -66,13 +60,9 @@ mod tests {
     }
 
     #[test]
-    fn paragraph() {
-        let mut paragraph = recognize(terminated(many1(line), many0(line_ending)));
-
-        dbg!(line("line\n\n"));
-
-        let txt = "aaa\nbbb\nccc\n\n\nddd";
-
-        dbg!(paragraph(txt));
+    fn split_paragraphs_3() {
+        let txt = "1\nsecond line\n\n2\nsecond line\nthird line\n\n3\n";
+        let res = vec!["1\nsecond line\n", "2\nsecond line\nthird line\n", "3\n"];
+        assert_eq!(res, split_paragraphs(txt).unwrap());
     }
 }
